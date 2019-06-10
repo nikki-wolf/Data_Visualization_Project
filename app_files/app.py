@@ -11,14 +11,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
 import config
 
-user = 'xiacnjvpghbmfr'
-password = 'b3cf30fa5bf7debca00266a482ce7521d03a07f4ceea8e45b3bd6dd4d7e71951'
-port = '5432'
-database = 'dkkbr6cn2l5mv'
-host = 'ec2-54-163-230-199.compute-1.amazonaws.com'
-url = 'postgres://'+user+':'+password+'@'+host+':'+port+'/'+database
 
-# url = config.url
+url = config.url
 
 engine = sqlalchemy.create_engine(url)
 

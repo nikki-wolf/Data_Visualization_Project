@@ -1,3 +1,4 @@
+// --------------------------
 // WORLD MAP-KEVIN
 svgWidthMap=  ;
 svgHeightMap=  ;
@@ -9,75 +10,96 @@ chartMarginsMap = {
   bottom:
 };
 
-chartWidth1 = svgWidth - chartMargins.left - chartMargins.right;
-chartHeight1 = svgHeight - chartMargins.top - chartMargins.bottom;
+chartWidthMap = svgWidthMap - chartMarginsMap.left - chartMarginsMap.right;
+chartHeightMap = svgHeightMap - chartMarginsMap.top - chartMarginsMap.bottom;
 
-var svg1 = d3
+var svgMap = d3
   .select("body")
   .append("svg")
-  .attr("width", svgWidth)
-  .attr("height", svgHeight);
+  .attr("width", svgWidthMap)
+  .attr("height", svgHeightMap);
 
-var chartGroup1 = svg.append("g")
-  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+var chartGroupMap = svg.append("g")
+  .attr("transform", `translate(${chartMarginsMap.left}, ${chartMarginsMap.top})`);
 
 
 
 // -------------------------
 // POPUP PIE CHART-MATTHEW
+svgWidthPie=  ;
+svgHeightPie=  ;
 
-
-// --------------------------
-// BUBBLE CHART -RENATO
-
-svgWidth2=  ;
-svgHeight2=  ;
-
-chartMargins2 = {
+chartMarginsPie = {
   left:
   top:
   right:
   bottom:
 };
 
-chartWidth2 = svgWidth - chartMargins.left - chartMargins.right;
-chartHeight2 = svgHeight - chartMargins.top - chartMargins.bottom;
+chartWidthPie = svgWidthPie - chartMarginsPie.left - chartMarginsPie.right;
+chartHeightPie = svgHeightPie - chartMarginsPie.top - chartMarginsPie.bottom;
 
-var svg2 = d3
+var svgPie = d3
   .select("body")
   .append("svg")
-  .attr("width", svgWidth)
-  .attr("height", svgHeight);
+  .attr("width", svgWidthPie)
+  .attr("height", svgHeightPie);
 
-var chartGroup2 = svg.append("g")
-  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+var chartGroupPie = svg.append("g")
+  .attr("transform", `translate(${chartMarginsPie.left}, ${chartMarginsPie.top})`);
+
+
+// --------------------------
+// BUBBLE CHART-RENATO
+
+svgWidthBubble=  ;
+svgHeightBubble=  ;
+
+chartMarginsBubble = {
+  left:
+  top:
+  right:
+  bottom:
+};
+
+chartWidthBubble = svgWidthBubble - chartMarginsBubble.left - chartMarginsBubble.right;
+chartHeightBubble = svgHeightBubble - chartMarginsBubble.top - chartMarginsBubble.bottom;
+
+var svgBubble = d3
+  .select("body")
+  .append("svg")
+  .attr("width", svgWidthBubble)
+  .attr("height", svgHeightBubble);
+
+var chartGroupBubble = svg.append("g")
+  .attr("transform", `translate(${chartMarginsBubble.left}, ${chartMarginsBubble.top})`);
 
 
 
 // --------------------------------
-// PARALLEL COORDINATES -HEATHER
+// PARALLEL PLOT-HEATHER
 
-svgWidth3=  ;
-svgHeight3=  ;
+svgWidthPar=  ;
+svgHeightPar=  ;
 
-chartMargins3 = {
+chartMarginsPar = {
   left:
   top:
   right:
   bottom:
 };
 
-chartWidth3 = svgWidth - chartMargins.left - chartMargins.right;
-chartHeight3 = svgHeight - chartMargins.top - chartMargins.bottom;
+chartWidthpar = svgWidthPar - chartMarginsPar.left - chartMarginsPar.right;
+chartHeightpar = svgHeightPar - chartMarginsPar.top - chartMarginsPar.bottom;
 
-var svg3 = d3
+var svgPar = d3
   .select("body")
   .append("svg")
-  .attr("width", svgWidth)
-  .attr("height", svgHeight);
+  .attr("width", svgWidthPar)
+  .attr("height", svgHeightPar);
 
-var chartGroup3 = svg.append("g")
-  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+var chartGroupPar = svg.append("g")
+  .attr("transform", `translate(${chartMarginsPar.left}, ${chartMarginsPar.top})`);
 
 
 

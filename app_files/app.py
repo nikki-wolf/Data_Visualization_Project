@@ -6,7 +6,7 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
-from flask import Flask, jsonify, render_template,json
+from flask import Flask, jsonify, render_template, json, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
 import json
@@ -46,7 +46,22 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
+@app.route("/api")
+def jdata():
+    #try:
+    wd=wine_opt2.find({},{'_id': False})
+    rows=[]
+    for data in wd:
+        rows.append(data)
+
+    #json_rows=json.dumps(rows)
+    #except Exception ,e:
+    #print str(e)
+
+    return jsonify(rows)
+
 #@app.route("/api")
+#@app.route("/api/country=<country>&year=")
 @app.route("/api/country=<country>")
 def jdata_country(country):
     #try:
@@ -56,12 +71,13 @@ def jdata_country(country):
         rows.append(data)
 
     #json_rows=json.dumps(rows)
-#except Exception ,e:
-#    print str(e)
+    #except Exception ,e:
+    #print str(e)
 
     return jsonify(rows)
 
 @app.route("/api/year=<year>")
+#@app.route("/api/year=<year>&country=")
 def jdata_year(year):
     #try:
     wd=wine_opt2.find({'year': year}, {'_id': False})
@@ -74,25 +90,19 @@ def jdata_year(year):
 #    print str(e)
 
     return jsonify(rows)
-    
-@app.route("/api/country=<country>&year=<year>")
-def jdata_country_year(country,year):
-    #try:
-    wd=wine_opt2.find({'country': country,'year': year}, {'_id': False})
-    rows=[]
-    for data in wd:
-        rows.append(data)
-
-    #json_rows=json.dumps(rows)
-#except Exception ,e:
-#    print str(e)
-
-    return jsonify(rows)
-
 @app.route("/api/year=<year>&country=<country>")
-def jdata_year_country(country,year):
+@app.route("/api/country=<country>&year=<int:year>")
+def jdata_country_year(country='',year=''):
     #try:
-    wd=wine_opt2.find({'country': country,'year': year}, {'_id': False})
+    print("country=",country,"year=",year)
+    print(request.base_url)
+    if (year):
+        print("contry and year")
+        wd=wine_opt2.find({'country': country,'year': str(year)}, {'_id': False})
+    else:
+        print("only country")
+        wd=wine_opt2.find({'country': country}, {'_id': False})
+
     rows=[]
     for data in wd:
         rows.append(data)

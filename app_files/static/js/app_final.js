@@ -1,3 +1,92 @@
+// WORLD MAP-KEVIN
+svgWidthMap=  ;
+svgHeightMap=  ;
+
+chartMarginsMap = {
+  left:
+  top:
+  right:
+  bottom:
+};
+
+chartWidth1 = svgWidth - chartMargins.left - chartMargins.right;
+chartHeight1 = svgHeight - chartMargins.top - chartMargins.bottom;
+
+var svg1 = d3
+  .select("body")
+  .append("svg")
+  .attr("width", svgWidth)
+  .attr("height", svgHeight);
+
+var chartGroup1 = svg.append("g")
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+
+
+// -------------------------
+// POPUP PIE CHART-MATTHEW
+
+
+// --------------------------
+// BUBBLE CHART -RENATO
+
+svgWidth2=  ;
+svgHeight2=  ;
+
+chartMargins2 = {
+  left:
+  top:
+  right:
+  bottom:
+};
+
+chartWidth2 = svgWidth - chartMargins.left - chartMargins.right;
+chartHeight2 = svgHeight - chartMargins.top - chartMargins.bottom;
+
+var svg2 = d3
+  .select("body")
+  .append("svg")
+  .attr("width", svgWidth)
+  .attr("height", svgHeight);
+
+var chartGroup2 = svg.append("g")
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+
+
+// --------------------------------
+// PARALLEL COORDINATES -HEATHER
+
+svgWidth3=  ;
+svgHeight3=  ;
+
+chartMargins3 = {
+  left:
+  top:
+  right:
+  bottom:
+};
+
+chartWidth3 = svgWidth - chartMargins.left - chartMargins.right;
+chartHeight3 = svgHeight - chartMargins.top - chartMargins.bottom;
+
+var svg3 = d3
+  .select("body")
+  .append("svg")
+  .attr("width", svgWidth)
+  .attr("height", svgHeight);
+
+var chartGroup3 = svg.append("g")
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+
+
+
+
+
+
+
+
 function buildMetadata(sample) {
 
   // @TODO: Complete the following function that builds the metadata panel

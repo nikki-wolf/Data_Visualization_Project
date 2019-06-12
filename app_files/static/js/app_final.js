@@ -4,10 +4,10 @@ svgWidthMap=  ;
 svgHeightMap=  ;
 
 chartMarginsMap = {
-  left:
+  left: 
   top:
-  right:
-  bottom:
+  right: 
+  bottom: 
 };
 
 chartWidthMap = svgWidthMap - chartMarginsMap.left - chartMarginsMap.right;
@@ -26,27 +26,27 @@ var chartGroupMap = svg.append("g")
 
 // -------------------------
 // POPUP PIE CHART-MATTHEW
-svgWidthPie=  ;
-svgHeightPie=  ;
+// svgWidthPie=  ;
+// svgHeightPie=  ;
 
-chartMarginsPie = {
-  left:
-  top:
-  right:
-  bottom:
-};
+// chartMarginsPie = {
+//   left:
+//   top:
+//   right:
+//   bottom:
+// };
 
-chartWidthPie = svgWidthPie - chartMarginsPie.left - chartMarginsPie.right;
-chartHeightPie = svgHeightPie - chartMarginsPie.top - chartMarginsPie.bottom;
+// chartWidthPie = svgWidthPie - chartMarginsPie.left - chartMarginsPie.right;
+// chartHeightPie = svgHeightPie - chartMarginsPie.top - chartMarginsPie.bottom;
 
-var svgPie = d3
-  .select("body")
-  .append("svg")
-  .attr("width", svgWidthPie)
-  .attr("height", svgHeightPie);
+// var svgPie = d3
+//   .select("body")
+//   .append("svg")
+//   .attr("width", svgWidthPie)
+//   .attr("height", svgHeightPie);
 
-var chartGroupPie = svg.append("g")
-  .attr("transform", `translate(${chartMarginsPie.left}, ${chartMarginsPie.top})`);
+// var chartGroupPie = svg.append("g")
+//   .attr("transform", `translate(${chartMarginsPie.left}, ${chartMarginsPie.top})`);
 
 
 // --------------------------
@@ -74,19 +74,28 @@ var svgBubble = d3
 var chartGroupBubble = svg.append("g")
   .attr("transform", `translate(${chartMarginsBubble.left}, ${chartMarginsBubble.top})`);
 
+  xScale =
+  yScale =
+  
+  xAxis =
+  yAxis =
+
+  leftAxis =
+  bottomAxis =
+
 
 
 // --------------------------------
 // PARALLEL PLOT-HEATHER
 
-svgWidthPar=  ;
-svgHeightPar=  ;
+svgWidthPar=  800;
+svgHeightPar=  500;
 
 chartMarginsPar = {
-  left:
-  top:
-  right:
-  bottom:
+  left: 20,
+  top: 20,
+  right: 20,
+  bottom: 20
 };
 
 chartWidthpar = svgWidthPar - chartMarginsPar.left - chartMarginsPar.right;
@@ -98,8 +107,31 @@ var svgPar = d3
   .attr("width", svgWidthPar)
   .attr("height", svgHeightPar);
 
-var chartGroupPar = svg.append("g")
+var chartGroupPar = svgPar.append("g")
   .attr("transform", `translate(${chartMarginsPar.left}, ${chartMarginsPar.top})`);
+
+
+// parallelData = d3.('.json').then(function(response) {
+//   response.forEach(function(data) {
+
+//   }
+// })
+
+var schema = [
+  {name: '', index: 0, text: 'Country'},
+  {name: '', index: 1, text: 'Price'},
+  {name: '', index: 2, text: 'Points'},
+  {name: '', index: 3, text: 'Variety'}
+];
+
+var lineStyle = {
+  normal: {
+      width: 1,
+      opacity: 0.5
+  }
+};
+
+ 
 
 
 

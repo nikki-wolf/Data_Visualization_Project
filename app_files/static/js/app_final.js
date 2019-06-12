@@ -1,3 +1,114 @@
+// --------------------------
+// WORLD MAP-KEVIN
+svgWidthMap=  ;
+svgHeightMap=  ;
+
+chartMarginsMap = {
+  left:
+  top:
+  right:
+  bottom:
+};
+
+chartWidthMap = svgWidthMap - chartMarginsMap.left - chartMarginsMap.right;
+chartHeightMap = svgHeightMap - chartMarginsMap.top - chartMarginsMap.bottom;
+
+var svgMap = d3
+  .select("body")
+  .append("svg")
+  .attr("width", svgWidthMap)
+  .attr("height", svgHeightMap);
+
+var chartGroupMap = svg.append("g")
+  .attr("transform", `translate(${chartMarginsMap.left}, ${chartMarginsMap.top})`);
+
+
+
+// -------------------------
+// POPUP PIE CHART-MATTHEW
+svgWidthPie=  ;
+svgHeightPie=  ;
+
+chartMarginsPie = {
+  left:
+  top:
+  right:
+  bottom:
+};
+
+chartWidthPie = svgWidthPie - chartMarginsPie.left - chartMarginsPie.right;
+chartHeightPie = svgHeightPie - chartMarginsPie.top - chartMarginsPie.bottom;
+
+var svgPie = d3
+  .select("body")
+  .append("svg")
+  .attr("width", svgWidthPie)
+  .attr("height", svgHeightPie);
+
+var chartGroupPie = svg.append("g")
+  .attr("transform", `translate(${chartMarginsPie.left}, ${chartMarginsPie.top})`);
+
+
+// --------------------------
+// BUBBLE CHART-RENATO
+
+svgWidthBubble=  ;
+svgHeightBubble=  ;
+
+chartMarginsBubble = {
+  left:
+  top:
+  right:
+  bottom:
+};
+
+chartWidthBubble = svgWidthBubble - chartMarginsBubble.left - chartMarginsBubble.right;
+chartHeightBubble = svgHeightBubble - chartMarginsBubble.top - chartMarginsBubble.bottom;
+
+var svgBubble = d3
+  .select("body")
+  .append("svg")
+  .attr("width", svgWidthBubble)
+  .attr("height", svgHeightBubble);
+
+var chartGroupBubble = svg.append("g")
+  .attr("transform", `translate(${chartMarginsBubble.left}, ${chartMarginsBubble.top})`);
+
+
+
+// --------------------------------
+// PARALLEL PLOT-HEATHER
+
+svgWidthPar=  ;
+svgHeightPar=  ;
+
+chartMarginsPar = {
+  left:
+  top:
+  right:
+  bottom:
+};
+
+chartWidthpar = svgWidthPar - chartMarginsPar.left - chartMarginsPar.right;
+chartHeightpar = svgHeightPar - chartMarginsPar.top - chartMarginsPar.bottom;
+
+var svgPar = d3
+  .select("body")
+  .append("svg")
+  .attr("width", svgWidthPar)
+  .attr("height", svgHeightPar);
+
+var chartGroupPar = svg.append("g")
+  .attr("transform", `translate(${chartMarginsPar.left}, ${chartMarginsPar.top})`);
+
+
+
+
+
+
+
+
+
 function buildMetadata(sample) {
 
   // @TODO: Complete the following function that builds the metadata panel

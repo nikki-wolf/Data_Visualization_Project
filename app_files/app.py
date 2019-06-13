@@ -39,6 +39,8 @@ db = client.heroku_stp5z9b7
 wine_opt1=db.wine # creating/reading collection by option 1
 wine_opt2=db.wine_history # creating/reading collection by option 2   
 
+func = lambda s: s[:1].lower() + s[1:] if s else '' #function to return lower case of all character of a strign
+
 app = Flask(__name__)
 
 
@@ -60,10 +62,10 @@ def jdata():
 
     return jsonify(rows)
 
-#@app.route("/api")
-#@app.route("/api/country=<country>&year=")
+
 @app.route("/api/country=<country>")
 def jdata_country(country):
+    country=func(country).title()
     #try:
     wd=wine_opt2.find({'country': country}, {'_id': False})
     rows=[]
@@ -90,7 +92,6 @@ def jdata_year(year):
 #    print str(e)
 
     return jsonify(rows)
-@app.route("/api/year=<year>&country=<country>")
 @app.route("/api/country=<country>&year=<int:year>")
 def jdata_country_year(country='',year=''):
     #try:

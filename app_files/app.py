@@ -51,7 +51,8 @@ FlaskJSON(app) #initiate FLASK-JSON
 @app.route("/get_time")
 def get_time2():
     now = datetime.utcnow()
-    return json_response(time=now)
+    #return json_response(time=now)
+    return jsonify(time=now)
 
 @app.route("/")
 def home():

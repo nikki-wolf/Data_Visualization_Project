@@ -41,7 +41,8 @@ db = client.heroku_stp5z9b7
 # create/read collections for options 1 and 2:
 wine_opt1=db.wine_rating # creating/reading collection by option 1
 wine_opt2=db.wine_history # creating/reading collection by option 2  
-wine_opt2_list=db.wine_history_list # creating/reading collection by option 2  
+wine_history_list=db.wine_history_list # reading wine history collection by option 2  
+wine_rating_list=db.wine_price_rating_list # reading wine rating and price collection
 
 func = lambda s: s[:1].lower() + s[1:] if s else '' #function to return lower case of all character of a strign
 
@@ -60,7 +61,7 @@ def home():
 
 @app.route("/api_rating")
 def idata():
-    wd=wine_opt1.find({},{'_id': False})
+    wd=wine_rating_list.find({},{'_id': False})
     rows=[]
     for data in wd:
         rows.append(data)
@@ -132,9 +133,9 @@ def jdata_geojson_country():
     country=request.args.get('country')
     if (country):
         country=func(country).title()
-        wd=wine_opt2_list.find({'country': country}, {'_id': False})
+        wd=wine_history_list.find({'country': country}, {'_id': False})
     else:
-        wd=wine_opt2_list.find({}, {'_id': False})
+        wd=wine_history_list.find({}, {'_id': False})
     rows=[]
     for data in wd:
         rows.append(data)

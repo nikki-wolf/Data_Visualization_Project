@@ -245,7 +245,7 @@ def jdata_geojson_country():
     country=request.args.get('country')
     if (country):
         country=func(country).title()
-        wd=wine_history_list.find({'country': country}, {'_id': False})
+        wd=wine_history_list.find({'Country': country}, {'_id': False})
     else:
         wd=wine_history_list.find({}, {'_id': False})
     rows=[]
@@ -265,20 +265,26 @@ def jdata_geojson_country():
 
             "geometry" : {
                 "type": "Point",
-                "coordinates": [d["coordinate"]["lon"], d["coordinate"]["lat"]],
+                "coordinates": [d["Coordinate"]["lon"], d["Coordinate"]["lat"]],
             },
 
             "properties" : 
             {
-
-              "country":d['country'],
-              "year": d['year'],
-              "Production":  d["Production"],
+              "Country":d['Country'],
+              "Year": d['Year'],
+              "Production_volume":  d["Production_volume"],
               "Production_capita": d["Production_capita"],
-              "Export": d["Export"],
-              "Import": d["Import"],
-              "Consumption": d["Consumption"],
+              "Production_capita_GDP": d["Production_capita_GDP"],
+              "Consumption_volume": d["Consumption_volume"],
               "Consumption_capita": d["Consumption_capita"],
+              "Consumption_capita_GDP": d["Consumption_capita_GDP"],
+              "Export_volume": d["Export_volume"],
+              "Export_value": d["Export_value"],
+              "Export_volume_GDP": d["Export_volume_GDP"],
+              "Import_volume": d["Import_volume"],
+              "Import_value": d["Import_value"],
+              "Import_volume_GDP": d["Import_volume_GDP"],
+              "Excess_volume":d["Excess_volume"],
               "Population": d["Population"],     
             } 
         }  for d in rows]

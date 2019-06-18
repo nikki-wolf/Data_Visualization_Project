@@ -1,8 +1,4 @@
-d3.csv("./data/wine_price_rating_review.csv").then(function(response) {
-  response.forEach(function(data) {
-    console.log(data)
-  });
-});
+
 
 // --------------------------
 // WORLD MAP-KEVIN

@@ -42,32 +42,149 @@ db = client.heroku_stp5z9b7
 # create/read collections for options 1 and 2:
 wine_opt1=db.wine_rating # creating/reading collection by option 1
 wine_opt2=db.wine_history # creating/reading collection by option 2  
+<<<<<<< HEAD
 wine_history_list=db.wine_history_list # reading wine history collection by option 2  
 wine_rating_list=db.wine_rating_list_World # reading wine rating and price collection
+=======
+wine_history_list=db.wine_history_list # reading wine history collection by option 2 
+wine_rating_list_World=db.wine_rating_list_World # reading wine rating and price collection for all the producing countries including US
+wine_rating_list_States=db.wine_rating_list_States # reading wine rating and price collection for The producing States
+>>>>>>> 332165b4f14ae31475bb5ba0b6f151a1fd988e2e
 
 func = lambda s: s[:1].lower() + s[1:] if s else '' #function to return lower case of all character of a strign
 
 app = Flask(__name__)
 FlaskJSON(app) #initiate FLASK-JSON
 
-@app.route("/get_time")
-def get_time2():
-    now = datetime.utcnow()
-    #return json_response(time=now)
-    return jsonify(time=now)
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
+# Route to return wine price, rating for all producing coutnries Worldwide in JSON format
 @app.route("/api_rating")
 def idata():
-    wd=wine_rating_list.find({},{'_id': False})
+    country=request.args.get('country')
+    if (country): 
+        print("!!!!country=",country)
+        country=func(country).title()
+        wd=wine_rating_list_World.find({'Country':country},{'_id': False})
+    else:
+        wd=wine_rating_list_World.find({},{'_id': False})
+
     rows=[]
     for data in wd:
         rows.append(data)
 
     return jsonify(rows)
+
+# Route to return wine price, rating for all the producing States in JSON format
+# user can make a query by State, e.g. State=Texas
+@app.route("/api_rating/States")
+def idata_state():
+    state=request.args.get('state')
+    if (state): 
+        print("!!!!state=",state)
+        state=func(state).title()
+        wd=wine_rating_list_States.find({'State':state},{'_id': False})
+    else:
+        wd=wine_rating_list_States.find({},{'_id': False})
+
+    rows=[]
+    for data in wd:
+        rows.append(data)
+    return jsonify(rows)
+
+# Route to return wine price, rating data for all producing countries worldwide in GeoJSON format. User can add country as an argument
+# e.g., /GeoJSON?country=frANCE
+@app.route("/api_rating/GeoJSON")
+def idata_geojson_country():
+    country=request.args.get('country')
+    if (country):
+        if country !='US':
+            country=func(country).title()
+        wd=wine_rating_list_World.find({'Country': country}, {'_id': False})
+    else:
+        wd=wine_rating_list_World.find({}, {'_id': False})
+    rows=[]
+    for data in wd:
+        rows.append(data)
+
+    geojson = {
+        "type": "FeatureCollection",
+        "metadata": {
+        "title": "Wine History by Pygeons",
+        "status": 200,
+        "count": len(rows)
+        },
+        "features": [
+        {
+            "type": "Feature",
+
+            "geometry" : {
+                "type": "Point",
+                "coordinates": [d["coordinate"]["lon"], d["coordinate"]["lat"]],
+            },
+
+            "properties" : 
+            {
+              "Country":d["Country"],
+              "Province": d["Province"],
+              "Price":  d["Price"],
+              "Rating": d["Rating"],
+              "Variety": d["Variety"],
+              "Subvariety": d["Subvariety"], 
+            } 
+        }  for d in rows]
+    }
+    return json.dumps(geojson)
+
+# Route to return wine price, rating data for all producing countries worldwide in GeoJSON format. User can add country as an argument
+# e.g., /GeoJSON?country=frANCE
+
+@app.route("/api_rating/States/GeoJSON")
+def idata_geojson_state():
+    state=request.args.get('state')
+    if (state):
+        state=func(state).title()
+        wd=wine_rating_list_States.find({'State': state}, {'_id': False})
+    else:
+        wd=wine_rating_list_States.find({}, {'_id': False})
+    rows=[]
+    for data in wd:
+        rows.append(data)
+
+    geojson = {
+        "type": "FeatureCollection",
+        "metadata": {
+        "title": "Wine History by Pygeons",
+        "status": 200,
+        "count": len(rows)
+        },
+        "features": [
+        {
+            "type": "Feature",
+
+            "geometry" : {
+                "type": "Point",
+                "coordinates": [d["coordinate"]["lon"], d["coordinate"]["lat"]],
+            },
+
+            "properties" : 
+            {
+              "Country":d["Country"],
+              "State":d['State'],
+              "Price":  d["Price"],
+              "Rating": d["Rating"],
+              "Variety": d["Variety"],
+              "Subvariety": d["Subvariety"], 
+            } 
+        }  for d in rows]
+    }
+    return json.dumps(geojson)
+
+
+
 
 @app.route("/api_history")
 def jsondata():
@@ -134,7 +251,7 @@ def jdata_geojson_country():
     country=request.args.get('country')
     if (country):
         country=func(country).title()
-        wd=wine_history_list.find({'country': country}, {'_id': False})
+        wd=wine_history_list.find({'Country': country}, {'_id': False})
     else:
         wd=wine_history_list.find({}, {'_id': False})
     rows=[]
@@ -154,20 +271,26 @@ def jdata_geojson_country():
 
             "geometry" : {
                 "type": "Point",
-                "coordinates": [d["coordinate"]["lon"], d["coordinate"]["lat"]],
+                "coordinates": [d["Coordinate"]["lon"], d["Coordinate"]["lat"]],
             },
 
             "properties" : 
             {
-
-              "country":d['country'],
-              "year": d['year'],
-              "Production":  d["Production"],
+              "Country":d['Country'],
+              "Year": d['Year'],
+              "Production_volume":  d["Production_volume"],
               "Production_capita": d["Production_capita"],
-              "Export": d["Export"],
-              "Import": d["Import"],
-              "Consumption": d["Consumption"],
+              "Production_capita_GDP": d["Production_capita_GDP"],
+              "Consumption_volume": d["Consumption_volume"],
               "Consumption_capita": d["Consumption_capita"],
+              "Consumption_capita_GDP": d["Consumption_capita_GDP"],
+              "Export_volume": d["Export_volume"],
+              "Export_value": d["Export_value"],
+              "Export_volume_GDP": d["Export_volume_GDP"],
+              "Import_volume": d["Import_volume"],
+              "Import_value": d["Import_value"],
+              "Import_volume_GDP": d["Import_volume_GDP"],
+              "Excess_volume":d["Excess_volume"],
               "Population": d["Population"],     
             } 
         }  for d in rows]

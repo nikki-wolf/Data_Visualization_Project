@@ -1,4 +1,5 @@
 import os
+import ast
 import psycopg2
 import pandas as pd
 import numpy as np
@@ -41,9 +42,14 @@ db = client.heroku_stp5z9b7
 # create/read collections for options 1 and 2:
 wine_opt1=db.wine_rating # creating/reading collection by option 1
 wine_opt2=db.wine_history # creating/reading collection by option 2  
+<<<<<<< HEAD
+wine_history_list=db.wine_history_list # reading wine history collection by option 2  
+wine_rating_list=db.wine_rating_list_World # reading wine rating and price collection
+=======
 wine_history_list=db.wine_history_list # reading wine history collection by option 2 
 wine_rating_list_World=db.wine_rating_list_World # reading wine rating and price collection for all the producing countries including US
 wine_rating_list_States=db.wine_rating_list_States # reading wine rating and price collection for The producing States
+>>>>>>> 332165b4f14ae31475bb5ba0b6f151a1fd988e2e
 
 func = lambda s: s[:1].lower() + s[1:] if s else '' #function to return lower case of all character of a strign
 

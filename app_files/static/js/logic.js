@@ -1,173 +1,282 @@
-// Function to determine marker size based on population
-function markerSize(population) {
-  return population / 40;
-}
+const maxCircleRadius= 100;
 
-let timeUrl='http://127.0.0.1:5000/get_time'
-d3.json(timeUrl).then(function(error, data) {
-  console.log('timeUrl=',timeUrl)
-  console.log('data=', data)
-  // Once we get a response, send the data.features object to the createFeatures function
-  createFeatures('time=',data.time);
-});
+//making map base
+// Define outdoorMap and satelliteMap layers
+mapBoxURLBase="https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}"
 
-
-
-//let queryUrl = '/api_history/GeoJSON'
-let baseUrl= 'http://127.0.0.1:5000/'
-let query = 'api_history?year=2010'
-let queryUrl=baseUrl + query
-// console.log("before func")
-// d3.request(queryUrl).header("Content-Type", "application/json").post(function(data){
-//   console.log(data)
-// })
-
-// Perform a GET request to the query URL
-d3.json(queryUrl).then(function(error, data) {
-  console.log('query=',queryUrl)
-  console.log('data=', data)
-  // Once we get a response, send the data.features object to the createFeatures function
-  createFeatures(data.features);
-});
-
-function createFeatures(wineHist) {
-  console.log(wineHist);
-}
-
-
-
-
-// An array containing all of the information needed to create city and state markers
-var locations = [
-  {
-    coordinates: [40.7128, -74.0059],
-    state: {
-      name: "New York State",
-      population: 19795791
-    },
-    city: {
-      name: "New York",
-      population: 8550405
-    }
-  },
-  {
-    coordinates: [34.0522, -118.2437],
-    state: {
-      name: "California",
-      population: 39250017
-    },
-    city: {
-      name: "Lost Angeles",
-      population: 3971883
-    }
-  },
-  {
-    coordinates: [41.8781, -87.6298],
-    state: {
-      name: "Michigan",
-      population: 12740000
-    },
-    city: {
-      name: "Chicago",
-      population: 2720546
-    }
-  },
-  {
-    coordinates: [29.7604, -95.3698],
-    state: {
-      name: "Texas",
-      population: 26960000
-    },
-    city: {
-      name: "Houston",
-      population: 2296224
-    }
-  },
-  {
-    coordinates: [41.2524, -95.9980],
-    state: {
-      name: "Nebraska",
-      population: 1882000
-    },
-    city: {
-      name: "Omaha",
-      population: 446599
-    }
-  }
-];
-
-// Define arrays to hold created city and state markers
-var cityMarkers = [];
-var stateMarkers = [];
-
-// Loop through locations and create city and state markers
-for (var i = 0; i < locations.length; i++) {
-  // Setting the marker radius for the state by passing population into the markerSize function
-  stateMarkers.push(
-    L.circle(locations[i].coordinates, {
-      stroke: false,
-      fillOpacity: 0.25,
-      color: "white",
-      fillColor: "white",
-      radius: markerSize(locations[i].state.population)
-    })
-  );
-
-  // Setting the marker radius for the city by passing population into the markerSize function
-  cityMarkers.push(
-    L.circle(locations[i].coordinates, {
-      stroke: false,
-      fillOpacity: 0.5,
-      color: "purple",
-      fillColor: "purple",
-      radius: markerSize(locations[i].city.population)
-    })
-  );
-}
-
-// Define variables for our base layers
-var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+var outdoorMap = L.tileLayer(mapBoxURLBase, {
+  attribution: "Map data &copy; <a href=\"https://www.openoutdoorMap.org/\">OpenoutdoorMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   maxZoom: 18,
-  id: "mapbox.streets",
+  id: "mapbox.outdoors",
   accessToken: API_KEY
 });
 
-var darkmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+var lightMap = L.tileLayer(mapBoxURLBase, {
+  attribution: "Map data &copy; <a href=\"https://www.openoutdoorMap.org/\">OpenoutdoorMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   maxZoom: 18,
-  id: "mapbox.dark",
+  id: "mapbox.light",
   accessToken: API_KEY
 });
 
-// Create two separate layer groups: one for cities and one for states
-var states = L.layerGroup(stateMarkers);
-var cities = L.layerGroup(cityMarkers);
+var satelliteMap = L.tileLayer(mapBoxURLBase, {
+  attribution: "Map data &copy; <a href=\"https://www.openoutdoorMap.org/\">OpenoutdoorMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "mapbox.satellite",
+  accessToken: API_KEY
+});
 
-// Create a baseMaps object
+// BaseMaps object to hold our base layers
 var baseMaps = {
-  "Street Map": streetmap,
-  "Dark Map": darkmap
+  "Satellite": satelliteMap,
+  "Greyscale": lightMap,
+  "Outdoor": outdoorMap
 };
 
-// Create an overlay object
-var overlayMaps = {
-  "State Population": states,
-  "City Population": cities
-};
 
-// Define a map object
+// marker variable
+var markers={}
+
+// Create our map, giving it the outdoorMap and earthquakes layers to display on load
 var myMap = L.map("map", {
-  center: [37.09, -95.71],
-  zoom: 5,
-  layers: [cities,states,streetmap]
+    center: [
+      29.7604, -95.3698
+    ],
+    zoom: 3,
+    //layers: [satelliteMap, wineHistory]
+    layers: [outdoorMap]
 });
 
 
-// Pass our map layers into our layer control
-// Add the layer control to the map
-L.control.layers(baseMaps, overlayMaps, {
-  // collapsed: false
-}).addTo(myMap);
 
+//retreive wine history data
+let wineHistApi = '/api_history/GeoJSON'
+//let wineHistApi = '/api_history'
+
+//retreive wine rating and price data
+//let wineRateApi='/api_rating/GeoJSON'
+let wineRateApi='/api_rating'
+
+
+//Transfering all JSON data imported from database and modify them in a format to be used in the code everywhere
+var Years=[], Countries=[], 
+    ProductionVolume=[], ProductionCapita=[],ProductionCapitaGDP=[], 
+    ConsumptionVolume=[],ConsumptionCapita=[], ConsumptionCapitaGDP=[],
+    ExportVolume=[], ExportValue=[], ExportVolumeGDP=[],
+    ImportVolume=[], ImportValue=[], ImportVolumeGDP=[],
+    ExcessVolume=[], Population=[];
+
+d3.json(wineHistApi).then(function(d){
+  Features=d.features
+  console.log(d.features)
+  for (let i=0;i<Features.length;i++){
+    let countryProps=Features[i].properties;
+    Countries.push(countryProps.Country);
+
+    ProductionVolume.push(JSON.parse(countryProps.Production_volume.replace(/\bnan\b/g, "null")));
+    ProductionCapita.push(JSON.parse(countryProps.Production_capita.replace(/\bnan\b/g, "null")));
+    ProductionCapitaGDP.push(JSON.parse(countryProps.Production_capita_GDP.replace(/\bnan\b/g, "null")));
+
+    ConsumptionVolume.push(JSON.parse(countryProps.Consumption_volume.replace(/\bnan\b/g, "null")));
+    ConsumptionCapita.push(JSON.parse(countryProps.Consumption_capita.replace(/\bnan\b/g, "null")));
+    ConsumptionCapitaGDP.push(JSON.parse(countryProps.Consumption_capita_GDP.replace(/\bnan\b/g, "null")));
+
+    ExportVolume.push(JSON.parse(countryProps.Export_volume.replace(/\bnan\b/g, "null")));
+    ExportValue.push(JSON.parse(countryProps.Export_value.replace(/\bnan\b/g, "null")));
+    ExportVolumeGDP.push(JSON.parse(countryProps.Export_volume_GDP.replace(/\bnan\b/g, "null")));
+
+    ImportVolume.push(JSON.parse(countryProps.Import_volume.replace(/\bnan\b/g, "null")));
+    ImportValue.push(JSON.parse(countryProps.Import_value.replace(/\bnan\b/g, "null")));
+    ImportVolumeGDP.push(JSON.parse(countryProps.Import_volume_GDP.replace(/\bnan\b/g, "null")));
+
+    ExcessVolume.push(JSON.parse(countryProps.Excess_volume.replace(/\bnan\b/g, "null")));
+
+    Population.push(JSON.parse(countryProps.Population.replace(/\bnan\b/g, "null")));
+
+  }
+
+  //Check with db and original csv file to make sure dta transfer is acceptable
+  // console.log(Countries)
+  // console.log(ProductionVolume) 
+  // console.log(ProductionCapita)
+  // console.log(ProductionCapitaGDP)
+  // console.log(ConsumptionVolume) 
+  // console.log(ConsumptionCapita)
+  // console.log(ConsumptionCapitaGDP)
+  // console.log(ExportVolume) 
+  // console.log(ExportValue)
+  // console.log(ExportVolumeGDP)
+  // console.log(ImportVolume) 
+  // console.log(ImportValue)
+  // console.log(ImportVolumeGDP)
+  // console.log(ExcessVolume) 
+  // console.log(Population)
+
+  // console.log("prod_capita_Italy @2010=",ProductionCapita[Countries.indexOf('Italy')][])
+  }); //END OF READING FROM API-JSON  (DO NOT GO BEYOND EXCEPT FOR FUNCTIONS and TESTS)
+
+markerYear(yrSpecIndex);
+
+var mark={}
+var prop;
+//function to update markers with year
+function markerYear(yrIndex) {
+  console.log('yrIndex=',yrIndex)
+  d3.select('#value-time').text(d3.timeFormat('%Y')(yrSpecIndex));
+
+  d3.json(wineHistApi).then(function(d1) { 
+    console.log(d1)
+    if (mark != undefined) {
+      myMap.removeLayer(mark);
+    };
+    //setTimeout(function(){ 
+      L.geoJSON(d1.features, {
+        
+        onEachFeature: function (feature, markerLayer) {
+          prop=feature.properties;
+          if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(prop.Country)){
+            mark= markerLayer.bindPopup(`<h3> ${prop.Country},${years[yrIndex]}</h3><hr>
+                                  <p>Production (kL): ${JSON.parse(prop.Production_volume.replace(/\bnan\b/g, "null"))[yrIndex]}</p>
+                                  </h3><hr><p>Consumption (kL): ${JSON.parse(prop.Consumption_volume.replace(/\bnan\b/g, "null"))[yrIndex]}</p>`);
+            // "</h3><hr><p>" + "</p>");
+          }
+        },
+        pointToLayer: function(feature, latlng) {
+          let prop=feature.properties
+          if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(prop.Country)){
+            return new L.circleMarker(latlng, 
+              {radius: JSON.parse(prop.Production_volume.replace(/\bnan\b/g, "null"))[yrIndex]/100000})
+            }
+        },
+        style: function(d){
+          return {
+              fillColor: getColor(d.properties.Production_volume),
+              fillOpacity: .6,
+              color: "white",
+              stroke: true,
+              weight: .8
+          }
+        }
+      }).addTo(myMap)
+    //}, 3000);  
+  })
+}
+
+// function to update markers with year
+// function markerYear(yrIndex) {
+//   d3.select('#value-time').text(d3.timeFormat('%Y')(yrSpecIndex));
+//   if (mark != undefined) {
+//     myMap.removeLayer(mark);
+//   };
+
+//   L.geoJSON(geoJsonHistFeature, {
+//     onEachFeature: function (feature, markerLayer) {
+//       console.log('111111111111111111111111111111111111',feature.properties.Production_capita[yrIndex])
+//       if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(feature.properties.Country)){
+//         console.log('here')
+//         mark= markerLayer.bindPopup(`<h3> ${feature.properties.Country},${years[yrIndex]}</h3><hr>
+//                               <p>Production (kL): ${feature.properties.Production_volume[yrIndex]}</p>
+//                               </h3><hr><p>Consumption (kL): ${feature.properties.Consumption_volume[yrIndex]}</p>`);
+//         // "</h3><hr><p>" + "</p>");
+//       }else{
+//         console.log("not found")
+//       }
+//     }
+//   }).addTo(myMap)
+// }
+// console.log(mark)
+
+//markerLayer.addData(geoJsonHistFeature);
+
+// define layers to be added to the base group
+var groupProdVol=L.featureGroup()
+var groupConsVol=L.featureGroup()
+
+
+//D3 range slider
+var dataTime = d3.range(0, 155, 5).map(function(d) {
+  return new Date(1865 + d, 10, 3);
+});
+
+var sliderTime = d3.sliderBottom()
+  .min(d3.min(dataTime))
+  .max(d3.max(dataTime))
+  .step(1000 * 60 * 60 * 24 * 365 * 5)
+  .width(1200)
+  .tickFormat(d3.timeFormat('%Y'))
+  .tickValues(dataTime)
+  .default(new Date(1980, 10, 3))
+  //.on('onchange', val => markerYear(years.indexOf(val)));
+  .on('onchange', function(val){
+    // console.log(parseInt(d3.timeFormat('%Y')(val)))
+    d3.select('#value-time').text(d3.timeFormat('%Y')(val))
+    markerYear(years.indexOf(parseInt(d3.timeFormat('%Y')(val))))
+  })
+
+  
+  // .on('onchange', val => {
+  //   d3.select('#value-time').text(d3.timeFormat('%Y')(val));
+  // });
+
+  var gTime = d3
+  .select('#slider-time')
+  .append('svg')
+  .attr('width', 1300)
+  .attr('height', 100)
+  .append('g')
+  .attr('transform', 'translate(30,30)');
+
+gTime.call(sliderTime);
+
+// Function to determine marker size based on production
+function markerSize(data,label) {
+  let x = d3.scaleLinear()
+    .domain([d3.min(data, d => d[Label]) * 0.8,
+      d3.max(data, d => d[Label]) * 1.2
+  ])
+  .range([0, 100]);
+
+  return x;
+  return production/100000;
+}
+
+
+function xScale(hraData,xLabel) {
+  // create scales
+  let x = d3.scaleLinear()
+    .domain([d3.min(hraData, d => d[xLabel]) * 0.8,
+      d3.max(hraData, d => d[xLabel]) * 1.2
+  ])
+  .range([0, maxCircleRadius]);
+
+  return x;
+}
+
+
+
+function getColor(d) {
+  return d>5 ? 'red':
+        d>4 ? "#FFEDA0":
+        d>3 ? "orange":
+        d>2 ? "yellow":
+        d>1 ? "#bfff00":
+        "#00fa00";
+};
+
+var prodVolMax=0
+//find the minimum & maximum of each feature throug hall years of study (1865-2016)
+function maxProps(){
+  d3.json(wineHistApi).then(function(d1) { 
+    //setTimeout(function(){ 
+    L.geoJSON(d1.features, {
+      onEachFeature: function (feature, markerLayer) {
+        prop=feature.properties;
+        let prodVol=JSON.parse(prop.Production_volume.replace(/\bnan\b/g, "null"))
+        console.log(Math.max(...prodVol))
+        prodVolMax=Math.max(prodVolMax,Math.max(...prodVol))
+      }
+    })
+  })
+}
+maxProps()
+console.log('maximum prod vol=',prodVolMax)
 

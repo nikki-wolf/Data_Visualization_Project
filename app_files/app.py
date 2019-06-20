@@ -1,3 +1,22 @@
+# Wine History project, by Pygeons, v.2, Kevin, Renato, Matt, Angel (was moved to another group), and Heather.
+# Jun-2019
+
+# Input data:
+# Our db is in mLAB (non-relational Mongo db) connected to Heroku environment. We have several collections on the db primarily describing two kind of wine data:
+# 1) Wine rating: relating wine variety, subvariety, price, and rating for all producing wine countries.
+#                  As an ETL project, we extracted features from the wine_price_rating_variety.csv (120915 rows) which in turn was generated on another ETL project by Pygeons from winemag-data-130k-v2.csv
+#                  cleaned data and after the required data transferring, loaded the collection to mLab in two modes:
+#                  1-a) wine_rating: features of each country and each year loaded as one documents: 120915 documents (we found it slow when called as a JSON in our flask app)
+#                  1-b-1) wine_rating_list_World: features of each country but for all years loaded in one document: 42 documents (countries include all producing countries + The US + World)
+#                  1-b-2) wine_rating_list_States: features of each State of the US but for all years loaded in one document: 42 documents (countries include all producing countries + The US + World)
+# 2) Wine history: data relating wine production, consumption, export and import for volume, value, and volume/GDP for all producing countries. 
+# More than 100 worksheets in raw data (Megafile_of_global_wine_data_1835_to_2016_1217.xlsx), cleaned data in another ETL project by Pygeons and transfered it to Wine_history.xlsx.
+# We loaded data to mLab in three modes:
+#                  2-a) wine_history_onedocument: all data loaded as one single document (a JSON format from a Pandas df). Performance of calling this collection was acceptable but the filtering option based on applying mongodb filter options were not available.
+#                  2-b) wine_hisotry: features for each country and each year loaded as one document (8056 document). Filtering options are great by the performance of calling this collection was not acceptable particularly when data transferred to GeoJSON format.
+#                  2-c) wine_history_list: features for each country but for all years loaded in one document (53 documents). It is the optimized calling performance and filtering option and was uselcted for the GeoJSON calls in this project.
+
+# The Jupyter notebook (wine_db_v2.ipynb) is the code of ETL project.
 import os
 import psycopg2
 import pandas as pd
@@ -6,7 +25,7 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
-from flask import Flask, jsonify, render_template, json, request
+from flask import Flask, jsonify, render_template, json, request,url_for
 from flask_json import FlaskJSON, JsonError, json_response, as_json
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
@@ -14,6 +33,8 @@ import json
 from bson import ObjectId
 from collections import OrderedDict
 from datetime import datetime
+import ast
+import simplejson
 
 
 import pymongo
@@ -55,12 +76,72 @@ FlaskJSON(app) #initiate FLASK-JSON
 def home():
     return render_template("index.html")
 
+#generate data in json format to be called by indexPlotly.html  
+@app.route("/plotlyData")
+def plotlyData():
+    dummy=0.0000001
+    country=request.args.get('country')
+    wd=wine_history_list.find({'Country': country}, {'_id': False})
+    production_volume=ast.literal_eval(wd[0]['Production_volume'].replace("nan",str(dummy))) #convert string of list of numeric values to list of numerics
+    production_volume=[np.nan if x==dummy else x for x in production_volume] #replace generate dummy value with nan
+
+    consumption_volume=ast.literal_eval(wd[0]['Consumption_volume'].replace("nan",str(dummy))) #convert string of list of numeric values to list of numerics
+    consumption_volume=[np.nan if x==dummy else x for x in consumption_volume] #replace generate dummy value with nan 
+
+    Export_volume=ast.literal_eval(wd[0]['Export_volume'].replace("nan",str(dummy))) #convert string of list of numeric values to list of numerics
+    Export_volume=[np.nan if x==dummy else x for x in Export_volume] #replace generate dummy value with nan 
+
+    Import_volume=ast.literal_eval(wd[0]['Import_volume'].replace("nan",str(dummy))) #convert string of list of numeric values to list of numerics
+    Import_volume=[np.nan if x==dummy else x for x in Import_volume] #replace generate dummy value with nan 
+
+    years=ast.literal_eval(wd[0]['Year']) #convert string of list of numeric values to list of numerics
+   
+    trace1 = {
+        "x": years,
+        "y": production_volume,
+        "name": "Production Volume (kL)",
+        "type": 'scatter'
+    }
+    trace2 = {
+        "x": years,
+        "y": consumption_volume,
+        "name": "Consumption Volume (kL)",
+        "type": 'scatter'
+    }
+
+    trace3 = {
+        "x": years,
+        "y": Export_volume,
+        "name": "Export Volume (kL)",
+        "type": 'scatter'
+    } 
+    trace4 = {
+        "x": years,
+        "y": Import_volume,
+        "name": "Import Volume (kL)",
+        "type": 'scatter'
+    }
+
+    chartData=[trace1, trace2, trace3, trace4]  
+
+    chartLayout={"title": country}
+
+    data={"data":chartData, 
+          "layout": chartLayout}
+    #return jsonify(data)
+    return simplejson.dumps(data, ignore_nan=True)
+
+#plots charts for each country using Plotly and load it to /plotly/?country=countryname (it will be called in leaflet map popup in logic.js)
+@app.route("/plotlyChart")
+def plotlyChart():
+    country=request.args.get('country')
+    return render_template("indexPlotly.html",country=country)
+
 # Route to return wine price, rating for all producing coutnries Worldwide in JSON format
 @app.route("/api_rating")
 def idata():
     country=request.args.get('country')
     if (country): 
-        print("!!!!country=",country)
         country=func(country).title()
         wd=wine_rating_list_World.find({'Country':country},{'_id': False})
     else:
@@ -78,7 +159,6 @@ def idata():
 def idata_state():
     state=request.args.get('state')
     if (state): 
-        print("!!!!state=",state)
         state=func(state).title()
         wd=wine_rating_list_States.find({'State':state},{'_id': False})
     else:

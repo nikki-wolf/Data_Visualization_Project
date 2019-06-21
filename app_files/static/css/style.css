@@ -1,16 +1,72 @@
+.demo-layout-transparent {
+  background: url('../assets/demos/transparent.jpg') center / cover;
+}
+.demo-layout-transparent .mdl-layout__header,
+.demo-layout-transparent .mdl-layout__drawer-button {
+  /* This background is dark, so we set text to white. Use 87% black instead if
+     your background is light. */
+  color: white;
+}
 
 #heatherDiv {
   /* display: inline-block; */
   background-color: white;
   position: relative;
   left: 160px;
-  top: 500px;
+  top: 100px;
   padding-left: 100px;
   padding-top: -20px;
   border-radius: 45px;
   padding-bottom: -20px;
-  
 }
+
+#heatherDiv {
+  /* display: inline-block; */
+  background-color: white;
+  position: relative;
+  left: 160px;
+  top: 100px;
+  padding-left: 100px;
+  padding-top: -20px;
+  border-radius: 45px;
+  padding-bottom: -20px;
+}
+
+  #kevinDiv {
+    /* display: inline-block; */
+    background-color: white;
+    position: relative;
+    left: 160px;
+    top: 100px;
+    padding-left: 100px;
+    padding-top: -20px;
+    border-radius: 45px;
+    padding-bottom: -20px;
+  }
+
+  #renatoDiv {
+    /* display: inline-block; */
+    background-color: white;
+    position: relative;
+    left: 160px;
+    top: 100px;
+    padding-left: 100px;
+    padding-top: -20px;
+    border-radius: 45px;
+    padding-bottom: -20px;
+  }
+
+  #mattyD {
+    /* display: inline-block; */
+    background-color: white;
+    position: relative;
+    left: 160px;
+    top: 100px;
+    padding-left: 100px;
+    padding-top: -20px;
+    border-radius: 45px;
+    padding-bottom: -20px;
+  }
 
 
 html,

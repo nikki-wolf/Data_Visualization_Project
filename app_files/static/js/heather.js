@@ -2,7 +2,9 @@ var countryUnpack
 var priceUnpack
 var ratingUnpack
 var varietyUnpack
-var uniqueID;
+var uniqueCountry
+var uniqueID = [];
+
 
 function myParallel() {
   var url = "/api_rating_extended";
@@ -26,18 +28,25 @@ function myParallel() {
         varietyUnpack = unpack(wineData, 'variety')
         console.log(varietyUnpack, 'unpacked variety')
 
-
-        uniqueID = countryUnpack.filter((v, i, a) => a.indexOf(v) === i);
-        console.log(uniqueID);
+        // retrieve unique values of countries
+        uniqueCountry = countryUnpack.filter((v, i, a) => a.indexOf(v) === i);
+        console.log(uniqueCountry);
 
       
+        // loop through each unique country, grab the ID and push it to an array. uniqueID was declared as global variable
+        uniqueCountry.forEach(function(value, index) {
+          uniqueID.push(index);
+          console.log(index);
+          console.log(value);
+          console.log(uniqueID);
+        });
+        
      
       var data = [{
         type: 'parcoords',
         visible: true,
         line: {
           showscale: true,
-          reversescale: true,
           colorscale: 'Jet',
           cmin: 1,
           cmax: 3000,
@@ -46,14 +55,15 @@ function myParallel() {
        
         dimensions: [{
           range: [0,43],
-          tickvals: Array.apply(0,new Array(43)).map(function(_,i){ return i+1 }),
-          ticktext: uniqueID,
+          tickvals: uniqueID,
+          ticktext: uniqueCountry,
           label: 'Countries',
           values: uniqueID
         }, {
           constraintrange: [2000,2500],
           range: [Math.min(...priceUnpack),
           Math.max(...priceUnpack)],
+          range:[0,10],
           label: 'Price',
           values: priceUnpack,
           multiselect:true
@@ -64,6 +74,7 @@ function myParallel() {
           label: 'Rating',
           range: [80,
           Math.max(...ratingUnpack)],
+          range: [0,10],
           values: ratingUnpack
         }, {
           label: 'Variety',

@@ -44,6 +44,8 @@ wine_opt2=db.wine_history # creating/reading collection by option 2
 wine_history_list=db.wine_history_list # reading wine history collection by option 2 
 wine_rating_list_World=db.wine_rating_list_World # reading wine rating and price collection for all the producing countries including US
 wine_rating_list_States=db.wine_rating_list_States # reading wine rating and price collection for The producing States
+wine_rating=db.wine_rating
+
 
 func = lambda s: s[:1].lower() + s[1:] if s else '' #function to return lower case of all character of a strign
 
@@ -65,6 +67,23 @@ def idata():
         wd=wine_rating_list_World.find({'Country':country},{'_id': False})
     else:
         wd=wine_rating_list_World.find({},{'_id': False})
+
+    rows=[]
+    for data in wd:
+        rows.append(data)
+
+    return jsonify(rows)
+
+
+@app.route("/api_rating_extended")
+def idata_extended():
+    country=request.args.get('country')
+    if (country): 
+        print("!!!!country=",country)
+        country=func(country).title()
+        wd=wine_rating.find({'Country':country},{'_id': False})
+    else:
+        wd=wine_rating.find({},{'_id': False})
 
     rows=[]
     for data in wd:

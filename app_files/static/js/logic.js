@@ -93,8 +93,6 @@ d3.json(wineHistApi).then(function(d){
   var dataTime = d3.range(0, 155, 5).map(function(d) {
     return new Date(1865 + d, 10, 3);
   });
-  // console.log('prod of Canada=',productionVolume[countries.indexOf('Canada')])
-  // console.log('prod of Canada=',productionVolume[countries.indexOf('Canada')][years.indexOf(1980)])
   var sliderTime = d3.sliderBottom()
     .min(d3.min(dataTime))
     .max(d3.max(dataTime))
@@ -113,7 +111,7 @@ d3.json(wineHistApi).then(function(d){
         let prodyr=productionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
         if (prodyr){
           d.setRadius(featureScale(productionVolumeRange)(prodyr))
-          .bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Production Volume (ML): ${(productionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(2)}</h3>`)
+          .bindPopup(bindPopupTable(value,i))
         }
        // }
       })
@@ -123,7 +121,8 @@ d3.json(wineHistApi).then(function(d){
         let consyr=consumptionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
         if (consyr){
           d.setRadius(featureScale(consumptionVolumeRange)(consyr))
-          .bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Consumption Volume (ML): ${(consumptionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(2)}</h3>`)
+          //.bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Consumption Volume (ML): ${(consumptionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(0)}</h3>`)
+          .bindPopup(bindPopupTable(value,i))
         }
         //  }
       })
@@ -134,7 +133,7 @@ d3.json(wineHistApi).then(function(d){
         let consyr=exportVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
         if (consyr){
           d.setRadius(featureScale(exportVolumeRange)(consyr))
-          .bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Export Volume (ML): ${(exportVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(2)}</h3>`)
+          .bindPopup(bindPopupTable(value,i))
         }
         //  }
       })
@@ -144,7 +143,7 @@ d3.json(wineHistApi).then(function(d){
         let consyr=importVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
         if (consyr){
           d.setRadius(featureScale(importVolumeRange)(consyr))
-          .bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Import Volume (ML): ${(importVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(2)}</h3>`)
+          .bindPopup(bindPopupTable(value,i))
         }
         //  }
       })
@@ -152,6 +151,63 @@ d3.json(wineHistApi).then(function(d){
             // productionVolumeMark.forEach(d => d.setRadius(parseInt(d3.timeFormat('%Y')(val)*500)))
       // consumptionVolumeMark.forEach(d => d.setRadius(parseInt(d3.timeFormat('%Y')(val)*500)))
     })
+
+  //returns a table tag fitting in hte leaflet popup
+  function bindPopupTable(value,i){
+
+    return `<table style="width: 440px">
+            <colgroup>
+              <col span="1" style="width: 35%;">
+              <col span="1" style="width: 20%;">
+              <col span="1" style="width: 45%;">
+            <colgroup>
+            <tbody>
+              <tr>
+                <th><h3 style="color:black;"> ${countriesMarked[i]}, ${value}</h3> </th>
+                <th><h3 style="color:black; font-size:100%">Volume (ML)</h3> </th>
+                <th><h3 style="color:black; font-size:100%; text-align:center">per Capita (litres)<b> / Value ($M)<b></h3> </th>
+              </tr>
+
+              <tr>
+                <td><h3 style="color:blue; font-size:150%">Production</h3></td>
+                <td><h3 style="color:blue; font-size:150%">${propertyRounding(productionVolume,i,value,1000,2)}</h3></td>
+                <td><h3 style="color:blue; font-size:150%; text-align:center">${propertyRounding(productionCapita,i,value,1,2)} / -</h3></td>
+              </tr>
+
+              <tr>
+                <td><h3 style="color:orange; font-size:150%">Consumption</h3></td>
+                <td><h3 style="color:orange; font-size:150%">${propertyRounding(consumptionVolume,i,value,1000,2)}</h3></td>
+                <td><h3 style="color:orange; font-size:150%; text-align:center">${propertyRounding(consumptionCapita,i,value,1,2)} / -</h3></td>
+              </tr>
+
+              <tr>
+                <td><h3 style="color:green; font-size:150%">Export</h3></td>
+                <td><h3 style="color:green; font-size:150%">${propertyRounding(exportVolume,i,value,1000,2)}</h3></td>
+                <td><h3 style="color:green; font-size:150%; text-align:center">- /<b> ${propertyRounding(exportValue,i,value,1000,2)}<b></h3></td>
+              </tr>
+
+              <tr>
+                <td><h3 style="color:red; font-size:150%">Import</h3></td>
+                <td><h3 style="color:red; font-size:150%">${propertyRounding(importVolume,i,value,1000,2)}</h3></td>
+                <td><h3 style="color:red; font-size:150%; text-align:center">- /<b> ${propertyRounding(importValue,i,value,1000,2)}<b></h3></td>
+              </tr>
+            <tbody>
+          </table>`
+  }
+  // returns a property par divieded by division rounded by digits
+  function propertyRounding(par,i,value,division,digits){
+    if (countriesMarked[i]){
+      let param= par[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
+      if (param){
+        return (param/division).toFixed(digits)
+      }else{
+        return 0;
+      }
+    }else{
+      return 0
+    }
+  }
+
   gTime.call(sliderTime);
   // .on('onclick',function(e){
   //     var popLocation= new L.LatLng(-42.8585,147.2468);
@@ -316,7 +372,7 @@ d3.json(wineHistApi).then(function(d){
               color: "blue",
               fillColor: "blue",
               radius: featureScale(productionVolumeRange)(productionVolume[i][yr])
-            }).bindPopup(`<h1>${countries[i]}, ${yearSlider}</h1> <hr> <h3>Production Volume (ML): ${(productionVolume[i][yr]/1E3).toFixed(2)}</h3>`)
+            }).bindPopup(bindPopupTable(yearSlider,i))
           );
         //}
 
@@ -328,7 +384,7 @@ d3.json(wineHistApi).then(function(d){
               color: "orange",
               fillColor: "orange",
               radius:featureScale(consumptionVolumeRange)(consumptionVolume[i][yr])
-            }).bindPopup(`<h1>${countries[i]},${yearSlider}</h1> <hr> <h3>Consumption Volume (ML): ${(consumptionVolume[i][yr]/1E3).toFixed(2)}</h3>`)
+            }).bindPopup(bindPopupTable(yearSlider,i))
           );
         //}
 
@@ -340,7 +396,7 @@ d3.json(wineHistApi).then(function(d){
               color: "green",
               fillColor: "green",
               radius:featureScale(exportVolumeRange)(exportVolume[i][yr])
-            }).bindPopup(`<h1>${countries[i]},${yearSlider}</h1> <hr> <h3>Export Volume (ML): ${(exportVolume[i][yr]/1E3).toFixed(2)}</h3>`)
+            }).bindPopup(bindPopupTable(yearSlider,i))
           );
         //}
 
@@ -352,7 +408,7 @@ d3.json(wineHistApi).then(function(d){
               color: "red",
               fillColor: "red",
               radius:featureScale(importVolumeRange)(importVolume[i][yr])
-            }).bindPopup(`<h1>${countries[i]},${yearSlider}</h1> <hr> <h3>Import Volume (ML): ${(importVolume[i][yr]/1E3).toFixed(2)}</h3>`)
+            }).bindPopup(bindPopupTable(yearSlider,i))
           );
         //}
       }

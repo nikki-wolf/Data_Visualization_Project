@@ -27,8 +27,8 @@ function myParallel() {
         console.log(varietyUnpack, 'unpacked variety')
 
 
-           uniqueID = countryUnpack.filter((v, i, a) => a.indexOf(v) === i);
-         console.log(uniqueID);
+        uniqueID = countryUnpack.filter((v, i, a) => a.indexOf(v) === i);
+        console.log(uniqueID);
 
       
      

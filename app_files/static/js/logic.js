@@ -1,8 +1,10 @@
 const maxCircleRadius= 500000;
+const startSlider=1980;
 
 // Define arrays to hold created markers
-var productionVolumeMark =[];
-var consumptionVolumeMark = [];
+var productionVolumeMark ,consumptionVolumeMark, exportVolumeMark,importVolumeMark;
+
+var countriesMarked=[];
   
 var productionVolumeLayer, consumptionVolumeLayer; 
 var overlayMaps, controlLayer;
@@ -37,9 +39,9 @@ var baseMaps = {
 // Create our map, giving it the outdoorMap and earthquakes layers to display on load
 var myMap = L.map("map", {
     center: [
-      29.7604, -95.3698
+      20,0
     ],
-    zoom: 2,
+    zoom: 3,
     //layers: [lightMap, wineHistory]
     layers: [outdoorMap]
 });
@@ -91,6 +93,8 @@ d3.json(wineHistApi).then(function(d){
   var dataTime = d3.range(0, 155, 5).map(function(d) {
     return new Date(1865 + d, 10, 3);
   });
+  // console.log('prod of Canada=',productionVolume[countries.indexOf('Canada')])
+  // console.log('prod of Canada=',productionVolume[countries.indexOf('Canada')][years.indexOf(1980)])
   var sliderTime = d3.sliderBottom()
     .min(d3.min(dataTime))
     .max(d3.max(dataTime))
@@ -98,13 +102,53 @@ d3.json(wineHistApi).then(function(d){
     .width(1200)
     .tickFormat(d3.timeFormat('%Y'))
     .tickValues(dataTime)
-    .default(new Date(1980, 10, 3))
+    .default(new Date(startSlider, 10, 3))
     .on('onchange', function(val){
       let value=parseInt(d3.timeFormat('%Y')(val))
       d3.select('#value-time').text(d3.timeFormat('%Y')(val))
-      productionVolumeMark.forEach((d,i)=> d.setRadius(featureLogScale(productionVolumeRange)(productionVolume[i][years.indexOf(value)])))
-      consumptionVolumeMark.forEach((d,i) => d.setRadius(featureScale(consumptionVolumeRange)(consumptionVolume[i][years.indexOf(value)])))
-      polygonMark.forEach((d,i)=> d.setPopupContent("<h1>" +"HEREEEEEEEEE"+ countries[i] + "</h1> <hr> <h2>" + productionVolume[i][years.indexOf(value)] + "</h2>"));
+
+      productionVolumeMark.forEach(function(d,i){     
+
+       // if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(countries[i])){
+        let prodyr=productionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
+        if (prodyr){
+          d.setRadius(featureScale(productionVolumeRange)(prodyr))
+          .bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Production Volume (ML): ${(productionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(2)}</h3>`)
+        }
+       // }
+      })
+
+      consumptionVolumeMark.forEach(function(d,i){
+        //  if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(countries[i])){
+        let consyr=consumptionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
+        if (consyr){
+          d.setRadius(featureScale(consumptionVolumeRange)(consyr))
+          .bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Consumption Volume (ML): ${(consumptionVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(2)}</h3>`)
+        }
+        //  }
+      })
+
+
+      exportVolumeMark.forEach(function(d,i){
+        //  if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(countries[i])){
+        let consyr=exportVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
+        if (consyr){
+          d.setRadius(featureScale(exportVolumeRange)(consyr))
+          .bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Export Volume (ML): ${(exportVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(2)}</h3>`)
+        }
+        //  }
+      })
+        
+      importVolumeMark.forEach(function(d,i){
+        //  if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(countries[i])){
+        let consyr=importVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]
+        if (consyr){
+          d.setRadius(featureScale(importVolumeRange)(consyr))
+          .bindPopup(`<h1>${countriesMarked[i]}, ${value}</h1> <hr> <h3>Import Volume (ML): ${(importVolume[countries.indexOf(countriesMarked[i])][years.indexOf(value)]/1E3).toFixed(2)}</h3>`)
+        }
+        //  }
+      })
+      //polygonMark.forEach((d,i)=> d.setPopupContent("<h1>" +"HEREEEEEEEEE"+ countries[i] + "</h1> <hr> <h2>" + productionVolume[i][years.indexOf(value)] + "</h2>"));
             // productionVolumeMark.forEach(d => d.setRadius(parseInt(d3.timeFormat('%Y')(val)*500)))
       // consumptionVolumeMark.forEach(d => d.setRadius(parseInt(d3.timeFormat('%Y')(val)*500)))
     })
@@ -180,14 +224,11 @@ d3.json(wineHistApi).then(function(d){
   polygonWorld.forEach(function(d,i){
     if (countries.includes(d.properties.ADMIN)){
       polygonCountry.push(d)
-    }else{
-      //console.log(d.properties.ADMIN)
     }
   })
 
   var polygonGeoJSON= {
-    "type": "FeatureCollection",
-                                                                                    
+    "type": "FeatureCollection",                                                                                 
     "features": polygonCountry
   }
 
@@ -236,67 +277,100 @@ d3.json(wineHistApi).then(function(d){
     }
   }).addTo(myMap);
 
-  //adding marker to polygons
-  polygonMark = [];
-  for (let i =42; i < countries.length; i++) {
-    if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(countries[i])){
-      polygonMark.push(
-        L.popup()
-        .setLatLng(coordinates[i])
-        .setContent(`<h1>${countries[i]}</h1><hr><h3><h3>`).addTo(polyLayer)
-      )
-    }
-  }
-  polygonMark.push(
-    L.popup()
-    .setLatLng(coordinates[0])  
-    .setContent(`<iframe frameborder="0" seamless="seamless" width=600px height=400px \
-    scrolling="no" src="/plotlyChart?country=${countries[3]}"></iframe></div>`, {maxWidth: 600}).addTo(polyLayer)
+  // //adding marker to polygons
+  // polygonMark = [];
+  // for (let i =42; i < countries.length; i++) {
+  //   if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(countries[i])){
+  //     polygonMark.push(
+  //       L.popup()
+  //       .setLatLng(coordinates[i])
+  //       .setContent(`<h1>${countries[i]}</h1><hr><h3><h3>`).addTo(polyLayer)
+  //     )
+  //   }
+  // }
+  // polygonMark.push(
+  //   L.popup()
+  //   .setLatLng(coordinates[0])  
+  //   .setContent(`<iframe frameborder="0" seamless="seamless" width=600px height=400px \
+  //   scrolling="no" src="/plotlyChart?country=${countries[3]}"></iframe></div>`, {maxWidth: 600}).addTo(polyLayer)
 
-  )
+  // )
 
   // Loop through countries and create markers
   function allMarkerCircle(yearSlider, zoomLevel, init=false){
     productionVolumeMark =[];
     consumptionVolumeMark = [];
+    exportVolumeMark=[];
+    importVolumeMark=[];
   
     for (let i = 0; i < countries.length; i++) {
       if (!['World', 'Other WEM', 'Other ECA', 'Other LAC', 'Other AME'].includes(countries[i])){
-        // Marker circle for productionVolume
-        if (productionVolume[i][yearSlider]){
+        countriesMarked.push(countries[i])
+        let yr= years.indexOf(yearSlider);
+        // Marker circle for productionVolume, consumptionVolume, exportVolume, and importVolume
+        //if (productionVolume[i][yr]){
           productionVolumeMark.push(
             L.circle(coordinates[i], {
               stroke: false,
               fillOpacity: 0.25,
               color: "blue",
               fillColor: "blue",
-              radius: featureScale(productionVolumeRange)(productionVolume[i][yearSlider])
-            }).bindPopup(`<h1>${countries[i]}</h1> <hr> <h3>Production Volume (BL): ${productionVolume[i][yearSlider]/1E6}</h3>`)
+              radius: featureScale(productionVolumeRange)(productionVolume[i][yr])
+            }).bindPopup(`<h1>${countries[i]}, ${yearSlider}</h1> <hr> <h3>Production Volume (ML): ${(productionVolume[i][yr]/1E3).toFixed(2)}</h3>`)
           );
-        }
+        //}
 
-        if (consumptionVolume[i][yearSlider]){
+        //if (consumptionVolume[i][startSlider]){
           consumptionVolumeMark.push(
+            L.circle(coordinates[i], {
+              stroke: false,
+              fillOpacity: 0.5,
+              color: "orange",
+              fillColor: "orange",
+              radius:featureScale(consumptionVolumeRange)(consumptionVolume[i][yr])
+            }).bindPopup(`<h1>${countries[i]},${yearSlider}</h1> <hr> <h3>Consumption Volume (ML): ${(consumptionVolume[i][yr]/1E3).toFixed(2)}</h3>`)
+          );
+        //}
+
+        //if (exportVolume[i][startSlider]){
+          exportVolumeMark.push(
+            L.circle(coordinates[i], {
+              stroke: false,
+              fillOpacity: 0.5,
+              color: "green",
+              fillColor: "green",
+              radius:featureScale(exportVolumeRange)(exportVolume[i][yr])
+            }).bindPopup(`<h1>${countries[i]},${yearSlider}</h1> <hr> <h3>Export Volume (ML): ${(exportVolume[i][yr]/1E3).toFixed(2)}</h3>`)
+          );
+        //}
+
+        //if (importVolume[i][yearSlider]){
+          importVolumeMark.push(
             L.circle(coordinates[i], {
               stroke: false,
               fillOpacity: 0.5,
               color: "red",
               fillColor: "red",
-              radius:featureScale(consumptionVolumeRange)(consumptionVolume[i][yearSlider])
-            }).bindPopup(`<h1>${countries[i]}</h1> <hr> <h3>Consumption Volume (BL): ${consumptionVolume[i][yearSlider]/1E6}</h3>`)
-          )
-        }
+              radius:featureScale(importVolumeRange)(importVolume[i][yr])
+            }).bindPopup(`<h1>${countries[i]},${yearSlider}</h1> <hr> <h3>Import Volume (ML): ${(importVolume[i][yr]/1E3).toFixed(2)}</h3>`)
+          );
+        //}
       }
     }
+
  
     // Create separate layers groups per feature
     productionVolumeLayer = L.layerGroup(productionVolumeMark);
     consumptionVolumeLayer = L.layerGroup(consumptionVolumeMark);
+    exportVolumeLayer = L.layerGroup(exportVolumeMark);
+    importVolumeLayer = L.layerGroup(importVolumeMark);
 
     // Create an overlay object
     overlayMaps = {
       "Production Volume (kL)": productionVolumeLayer,
       "Consumption Volume (kL)": consumptionVolumeLayer,
+      "Export Volume (kL)": exportVolumeLayer,
+      "Import Volume (kL)": importVolumeLayer,
     };
 
     //Control form including all base and overlay maps
@@ -307,7 +381,7 @@ d3.json(wineHistApi).then(function(d){
     }
     
   } //end of marker function
-  allMarkerCircle(145,myMap.getZoom(), true) //default yr 2010
+  allMarkerCircle(startSlider,myMap.getZoom(), true) //default yr 2010
 
 }); //END OF READING FROM API-JSON  (DO NOT GO BEYOND EXCEPT FOR FUNCTIONS and TESTS)
 

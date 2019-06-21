@@ -1,8 +1,3 @@
-
-    console.log('helloooooooooooooo')
-  
-    // ?country=spain
-
 var countryUnpack
 var priceUnpack
 var ratingUnpack

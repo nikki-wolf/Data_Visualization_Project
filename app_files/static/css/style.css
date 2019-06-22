@@ -1,23 +1,6 @@
-.demo-layout-transparent {
-  background: url('../assets/demos/transparent.jpg') center / cover;
-}
-.demo-layout-transparent .mdl-layout__header,
-.demo-layout-transparent .mdl-layout__drawer-button {
-  /* This background is dark, so we set text to white. Use 87% black instead if
-     your background is light. */
-  color: white;
-}
-
-#heatherDiv {
-  /* display: inline-block; */
-  background-color: white;
-  position: relative;
-  left: 160px;
-  top: 100px;
-  padding-left: 100px;
-  padding-top: -20px;
-  border-radius: 45px;
-  padding-bottom: -20px;
+html, body
+{
+  background: linear-gradient(to right, rgb(59,8,30), #9c1767);
 }
 
 #heatherDiv {
@@ -68,41 +51,6 @@
     padding-bottom: -20px;
   }
 
-
-html,
-body {
-  height: 100%;
-  padding: 0;
-  margin: 0;
-}
-.jumbotron {
-  color: black;
-  /* background-image: url("http://biomedna.com/wp-content/uploads/2017/07/iStock-628978952_L-1-e1499992813930.jpg"); */
-  /* background-image: url("https://www.forensisgroup.com/wp-content/uploads/2016/06/Legionnaires.jpg"); */
-  /* background-image: url("http://www.mbiome.com/wp-content/uploads/2013/07/Bacteria-closeup-943x345.jpg"); */
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-.container {
-  background:white;
-}
-
-.panel .panel-heading{
-  background-color:rgba(24, 60, 144, 1);
-}
-
-.well{
-  background:rgba(216, 222, 238, .5);
-  border-color: rgba(24, 60, 144, 1);
-}
-
-.panel{
-  background:rgba(216, 222, 238, .5);
-  border-color: rgba(24, 60, 144, 1);
-}
 
 #map {
   height: 100%;

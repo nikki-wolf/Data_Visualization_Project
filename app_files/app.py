@@ -1,8 +1,8 @@
-# Wine History project, by Pygeons, v.2, Kevin, Renato, Matt, Angel (was moved to another group), and Heather.
+# Wine History project, by M. K. Beygi
 # Jun-2019
 
 # Input data:
-# Our db is in mLAB (non-relational Mongo db) connected to Heroku environment. We have several collections on the db primarily describing two kind of wine data:
+# My db is in mLAB (non-relational Mongo db) connected to Heroku environment. We have several collections on the db primarily describing two kind of wine data:
 # 1) Wine rating: relating wine variety, subvariety, price, and rating for all producing wine countries.
 #                  As an ETL project, we extracted features from the wine_price_rating_variety.csv (120915 rows) which in turn was generated on another ETL project by Pygeons from winemag-data-130k-v2.csv
 #                  cleaned data and after the required data transferring, loaded the collection to mLab in two modes:
